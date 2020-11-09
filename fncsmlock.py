@@ -14,13 +14,13 @@ from ircstates.numerics import RPL_WELCOME
 from ircrobots import Bot as BaseBot
 from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
-from ircrobots.matching import ANY, Nickname, Regex, Formatless
+from ircrobots.matching import ANY, Nick, Regex, Formatless
 from ircrobots.matching import Response, ResponseOr
 
 with open("channels-in") as f:
     CHANLIST = f.read().splitlines()
 
-CHANSERV = Nickname("ChanServ")
+CHANSERV = Nick("ChanServ")
 
 INFO_ENDOFINFO = Response("NOTICE", [ANY, Formatless("*** End of Info ***")],
                           source=CHANSERV)

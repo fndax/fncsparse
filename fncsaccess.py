@@ -16,12 +16,12 @@ from ircstates.numerics import RPL_WELCOME
 from ircrobots import Bot as BaseBot
 from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
-from ircrobots.matching import Response, ANY, Nickname, Regex, ResponseOr
+from ircrobots.matching import Response, ANY, Nick, Regex
 
 with open("channels-in") as channels_in:
     CHANLIST = channels_in.read().splitlines()
 
-CHANSERV = Nickname("ChanServ")
+CHANSERV = Nick("ChanServ")
 
 INFO_ENDOFACCESS = Response("NOTICE", [ANY, Regex(r"End of .* FLAGS listing.")],
                             source=CHANSERV)
@@ -29,7 +29,7 @@ INFO_ACLENTRY = Response("NOTICE", [ANY, Regex(r"^[0-9]+\s+[^\s]+\s+")],
                          source=CHANSERV)
 INFO_NOTREG = Response("NOTICE", [ANY, Regex(r"is not registered\.")],
                        source=CHANSERV)
-INFO_NOTAUTHED = Response("NOTICE", [ANY, Regex(r"You are not authorized to" \
+INFO_NOTAUTHED = Response("NOTICE", [ANY, Regex(r"You are not authorized to " \
     "perform this operation.")], source=CHANSERV)
 
 class Server(BaseServer):
@@ -42,10 +42,8 @@ class Server(BaseServer):
                 await self.send(build("CHANSERV", ["ACCESS", channel, "LIST"]))
 
                 while True:
-                    line = await self.wait_for(ResponseOr(INFO_ACLENTRY,
-                                                          INFO_ENDOFACCESS,
-                                                          INFO_NOTREG,
-                                                          INFO_NOTAUTHED))
+                    line = await self.wait_for({INFO_ACLENTRY, INFO_ENDOFACCESS,
+                                                INFO_NOTREG, INFO_NOTAUTHED})
 
                     aclmatch = re.match(r"^[0-9]+\s+([^\s]+)\s+",
                                         line.params[1])

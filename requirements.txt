@@ -1,1 +1,1 @@
-ircrobots==0.1.4
+ircrobots==0.3.5
